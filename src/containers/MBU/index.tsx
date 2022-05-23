@@ -27,21 +27,26 @@ class Mbu extends PureComponent<IProps, {}> {
   }
 
   describe() {
-    const ws = new WebSocket('ws://192.168.143.128:1234');
 
-    ws.onmessage = (evt: MessageEvent) => {
-      //const data: Data = JSON.parse(evt.data);
+    let ws: WebSocket | undefined;
 
-      try {
-        const messageData = JSON.parse(evt.data)['__MESSAGE__'];
-        this.setState({ data: JSON.parse(messageData) });
+    setInterval(() => {
+      ws = new WebSocket('ws://192.168.143.128:1235');
+      ws!.onmessage = (evt: MessageEvent) => {
+        //const data: Data = JSON.parse(evt.data);
 
-        console.log(JSON.parse(messageData));
-        appViewerStore.setMbuData(JSON.parse(messageData));
-      } catch (e) {
-        console.log((e as Error).message);
-      }
-    };
+        try {
+          const messageData = JSON.parse(evt.data)['__MESSAGE__'];
+          this.setState({ data: JSON.parse(messageData) });
+          appViewerStore.setMbuData(JSON.parse(messageData));
+        } catch (e) {
+          console.log((e as Error).message);
+        }
+      };
+    }, 6000);
+
+
+
   }
 
   public componentDidMount() {

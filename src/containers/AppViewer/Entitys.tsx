@@ -33,12 +33,10 @@ function MColor(color: number, arg: number): Cesium.Color | Cesium.Property | un
   return map.get(color);
 }
 
-function drawFlightPathFlown3D(includeEntity: any): Cesium.Cartesian3[] {
-  return Cesium.Cartesian3.fromDegreesArrayHeights(includeEntity);
-}
 
 const Entitys: React.FunctionComponent<Iprops> = ({ mbuData }) => {
   const context: Context = useCesium();
+
 
   if (mbuData as Array<object>) {
     mbuData?.forEach((item) => {
@@ -47,22 +45,29 @@ const Entitys: React.FunctionComponent<Iprops> = ({ mbuData }) => {
       let sEntity: Cesium.Entity | undefined;
       sEntity = (context.viewer as Cesium.Viewer).entities.getById(mbu.UID) ?? undefined;
 
+      const heading = Cesium.Math.toRadians(mbu.Q + 270) as number;
+      const pitch = 0 as number;
+      const roll = 0 as number;
+      const hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+
+      let position = Cesium.Cartesian3.fromDegrees(
+        mbu!.L * Cesium.Math.DEGREES_PER_RADIAN,
+        mbu!.B * Cesium.Math.DEGREES_PER_RADIAN,
+        mbu!.H
+      ) as Cesium.Cartesian3;
+
+      let orientation = Cesium.Transforms.headingPitchRollQuaternion(
+        position as Cesium.Cartesian3,
+        hpr
+      ) as unknown as Cesium.Ellipsoid;
+
       if (sEntity) {
-        const heading = Cesium.Math.toRadians(mbu.Q + 270) as number;
-        const pitch = 0 as number;
-        const roll = 0 as number;
-        const hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
 
-        const position = Cesium.Cartesian3.fromDegrees(
-          mbu!.L * Cesium.Math.RADIANS_PER_DEGREE,
-          mbu!.B * Cesium.Math.RADIANS_PER_DEGREE,
-          mbu!.H
-        ) as Cesium.Cartesian3;
-
-        const orientation = Cesium.Transforms.headingPitchRollQuaternion(
+        let orientation = Cesium.Transforms.headingPitchRollQuaternion(
           position as Cesium.Cartesian3,
           hpr
         ) as unknown as Cesium.Ellipsoid;
+
 
         sEntity!.model!.color = (MColor(mbu.color, 0.1) as Cesium.Property) ?? undefined;
         sEntity!.position = position as unknown as Cesium.PositionProperty;
@@ -74,51 +79,49 @@ const Entitys: React.FunctionComponent<Iprops> = ({ mbuData }) => {
           material: (MColor(mbu.color, 0.5) as Cesium.MaterialProperty) ?? undefined,
           outline: true,
           outlineColor: Cesium.Color.GREY,
-          positions: new Cesium.CallbackProperty(drawFlightPathFlown3D, false),
+          positions: new Cesium.CallbackProperty(() => {
+              let points = [  mbu!.L * Cesium.Math.DEGREES_PER_RADIAN,   mbu!.B * Cesium.Math.DEGREES_PER_RADIAN, mbu!.H ] as Array<number>;
+              return Cesium.Cartesian3.fromDegreesArrayHeights(points);
+          }, false),
         });
+
       }
 
       if (sEntity === undefined) {
-        const heading = Cesium.Math.toRadians(mbu.Q + 270) as number;
-        const pitch = 0 as number;
-        const roll = 0 as number;
-        const hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
 
-        const position = Cesium.Cartesian3.fromDegrees(
-          mbu!.L * Cesium.Math.RADIANS_PER_DEGREE,
-          mbu!.B * Cesium.Math.RADIANS_PER_DEGREE,
-          mbu!.H
-        ) as Cesium.Cartesian3;
 
-        const orientation = Cesium.Transforms.headingPitchRollQuaternion(
-          position as Cesium.Cartesian3,
-          hpr
-        ) as unknown as Cesium.Ellipsoid;
 
-        const model = new Cesium.ModelGraphics({
-          uri: './static/media/air.glb',
+        let model = new Cesium.ModelGraphics({
+          uri: './air.glb',
           minimumPixelSize: 128,
-          maximumScale: 20,
-          scale: 0.5,
+          maximumScale: 20000,
+          scale: 500,
           color: MColor(mbu.color, 0.1),
         });
 
         let wall = new Cesium.WallGraphics({
           outline: true,
           outlineColor: Cesium.Color.GREY,
-          positions: new Cesium.CallbackProperty(drawFlightPathFlown3D, false),
+          positions: new Cesium.CallbackProperty(() => {
+              let points = [  mbu!.L * Cesium.Math.DEGREES_PER_RADIAN,   mbu!.B * Cesium.Math.DEGREES_PER_RADIAN, mbu!.H ] as Array<number>;
+              return Cesium.Cartesian3.fromDegreesArrayHeights(points);
+          }, false)
         });
 
-        const entity = new Cesium.Entity({
+        let entity = new Cesium.Entity({
           id: mbu.UID,
           name: mbu.name,
           description: mbu.description,
-          position: position,
+          position: Cesium.Cartesian3.fromDegrees(
+            mbu!.L * Cesium.Math.DEGREES_PER_RADIAN,
+            mbu!.B * Cesium.Math.DEGREES_PER_RADIAN,
+            mbu!.H
+          ) as Cesium.Cartesian3,
           orientation: new Cesium.CallbackProperty(() => {
             return orientation;
           }, false),
-          model,
           wall,
+          model
         });
 
         (context.viewer as Cesium.Viewer).entities.add(entity);
