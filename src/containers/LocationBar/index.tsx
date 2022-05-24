@@ -8,7 +8,7 @@ const LocationBar = ({ className }: { className: string }) => {
   const {
     appViewer: { positionData },
   } = React.useContext(MobXProviderContext) as IStores;
-  const { long, lat, height, elevation } = positionData;
+  const { long, lat, elevation } = positionData;
 
   return (
     <div className={_className}>

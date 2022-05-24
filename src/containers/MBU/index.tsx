@@ -27,26 +27,34 @@ class Mbu extends PureComponent<IProps, {}> {
   }
 
   describe() {
-
     let ws: WebSocket | undefined;
 
     setInterval(() => {
       ws = new WebSocket('ws://192.168.143.128:1235');
       ws!.onmessage = (evt: MessageEvent) => {
-        //const data: Data = JSON.parse(evt.data);
-
         try {
           const messageData = JSON.parse(evt.data)['__MESSAGE__'];
           this.setState({ data: JSON.parse(messageData) });
-          appViewerStore.setMbuData(JSON.parse(messageData));
+          appViewerStore.setMbuAirData(JSON.parse(messageData));
+          appViewerStore.setWallAirEntities(JSON.parse(messageData));
         } catch (e) {
           console.log((e as Error).message);
         }
       };
     }, 6000);
 
-
-
+    setInterval(() => {
+      ws = new WebSocket('ws://192.168.143.128:1234');
+      ws!.onmessage = (evt: MessageEvent) => {
+        try {
+          const messageData = JSON.parse(evt.data)['__MESSAGE__'];
+          this.setState({ data: JSON.parse(messageData) });
+          appViewerStore.setMbuEarthData(JSON.parse(messageData));
+        } catch (e) {
+          console.log((e as Error).message);
+        }
+      };
+    }, 20000);
   }
 
   public componentDidMount() {
@@ -55,7 +63,7 @@ class Mbu extends PureComponent<IProps, {}> {
 
   render() {
     const _className = `${styles.toolbar} ${this.props.className ? this.props.className : ''} `;
-    const { geoJsonData, czmlData, destination, imageryProviders, threeDTileset } = this.props.appViewer!;
+    const { geoJsonData, destination, imageryProviders, threeDTileset } = this.props.appViewer!;
 
     return <div className={_className}></div>;
   }

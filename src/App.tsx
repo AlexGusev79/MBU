@@ -13,7 +13,6 @@ class App extends React.Component<Props, {}> {
   constructor(props: Props) {
     super(props);
     this.state = {};
-    //<View className={styles.toolbar} />
   }
 
   render() {
@@ -22,6 +21,7 @@ class App extends React.Component<Props, {}> {
         <LocationBar className={styles.locationbar} />
         <Mbu className={styles.toolbar} />
         <AppViewer />
+        <View className={styles.toolbar} />
       </>
     );
   }

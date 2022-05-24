@@ -6,20 +6,20 @@ const tdtUrl = 'https://t{s}.tianditu.gov.cn/';
 const subdomains = ['0', '1', '2', '3', '4', '5', '6', '7'];
 
 export const td_img_imageryProvider = {
-  url: 'http://127.0.0.1:8080/geoserver/sf/wms',
-  layer: 'sf:earth_1km',
+  url: 'giswebservice/GISWebServiceSE/service.php?',
+  layer: 'BlueMarble3857',
   style: 'default',
   format: 'image/png',
   tileMatrixSetID: 'urn:ogc:def:wkss:OGC:1.0:GoogleMapsCompatible',
-  maximumLevel: 18,
+  maximumLevel: 20,
 };
 export const td_cia_imageryProvider = {
-  url: 'http://127.0.0.1:8080/geoserver/sf/wms',
-  layer: 'sf:earth_1km',
+  url: 'giswebservice/GISWebServiceSE/service.php?',
+  layer: 'BlueMarble3857',
   style: 'default',
   format: 'image/png',
   tileMatrixSetID: 'urn:ogc:def:wkss:OGC:1.0:GoogleMapsCompatible',
-  maximumLevel: 18,
+  maximumLevel: 20,
 };
 
 const imgMap = new UrlTemplateImageryProvider({

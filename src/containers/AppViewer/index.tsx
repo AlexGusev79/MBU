@@ -16,7 +16,6 @@ import { Viewer, CameraFlyTo, Cesium3DTileset } from 'resium';
 import { cesiumDefalutConfig } from '@/config';
 import ImageryLayers from './ImageryLayers';
 import GeoJson from './GeoJson';
-import Czml from './Czml';
 import EventHandler from './EventHandler';
 import Entitys from './Entitys';
 import { IStores } from '@/stores';
@@ -33,17 +32,19 @@ interface IProps {
 class AppViewer extends PureComponent<IProps, {}> {
   ref: { current: any | HTMLDivElement };
   viewer: CesiumViewer | undefined;
-  terrainProvider: CesiumTerrainProvider;
+  //terrainProvider: CesiumTerrainProvider;
 
   constructor(props: IProps) {
     super(props);
     this.ref = createRef();
+    /*
     this.terrainProvider = new CesiumTerrainProvider({
       url: props!.appViewer!.terrain,
       // url: IonResource.fromAssetId(3956),
       requestWaterMask: true,
       requestVertexNormals: true,
     });
+    */
     this.state = {};
   }
 
@@ -73,7 +74,8 @@ class AppViewer extends PureComponent<IProps, {}> {
   }
 
   render() {
-    const { geoJsonData, czmlData, destination, imageryProviders, threeDTileset, mbuData } = this.props.appViewer!;
+    const { geoJsonData, destination, imageryProviders, threeDTileset, mbuAirData, mbuEarthData, wallAirEntities } =
+      this.props.appViewer!;
 
     return (
       <Viewer
@@ -86,12 +88,12 @@ class AppViewer extends PureComponent<IProps, {}> {
         baseLayerPicker={false}
         timeline={false}
         geocoder={false}
-        terrainProvider={this.terrainProvider}
         ref={this.ref}
       >
         <ImageryLayers imageryProviders={imageryProviders} />
         <EventHandler />
-        <Entitys mbuData={mbuData} />
+        <Entitys mbuAirData={mbuAirData} mbuEarthData={mbuEarthData} wallAirEntities={wallAirEntities} />
+        <GeoJson geoJsonData={geoJsonData} />
       </Viewer>
     );
   }

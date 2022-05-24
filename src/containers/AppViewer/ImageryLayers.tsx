@@ -16,7 +16,7 @@ const ImageryLayers: React.FunctionComponent<Iprops> = ({ imageryProviders }) =>
   return (
     <>
       {imageryProviders.map((item, i) => {
-        return <ImageryLayer key={i} imageryProvider={imageryProvider(item)} />;
+        return <ImageryLayer alpha={0.5} key={i} imageryProvider={imageryProvider(item)} />;
       })}
     </>
   );
